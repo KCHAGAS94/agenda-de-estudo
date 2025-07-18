@@ -217,6 +217,324 @@ window.importarXLSX = async () => {
   reader.readAsArrayBuffer(file);
 };
 
+const tarefasFixas = [
+  {
+    date: "17/07/2025",
+    day: "Quinta",
+    subject: "Javascript",
+    time: "19:00 - 20:00",
+    completed: false
+  },
+  {
+    date: "17/07/2025",
+    day: "Quinta",
+    subject: "TypeScript",
+    time: "20:00 - 20:45",
+    completed: false
+  },
+  {
+    date: "17/07/2025",
+    day: "Quinta",
+    subject: "React",
+    time: "20:45 - 21:15",
+    completed: false
+  },
+  {
+    date: "17/07/2025",
+    day: "Quinta",
+    subject: "Projeto",
+    time: "21:15 - 21:45",
+    completed: false
+  },
+  {
+    date: "17/07/2025",
+    day: "Quinta",
+    subject: "Inglês",
+    time: "21:45 - 22:15",
+    completed: false
+  },
+  {
+    date: "17/07/2025",
+    day: "Quinta",
+    subject: "Firebase",
+    time: "22:15 - 22:30",
+    completed: false
+  },
+  {
+    date: "18/07/2025",
+    day: "Sexta",
+    subject: "Javascript",
+    time: "19:00 - 20:00",
+    completed: false
+  },
+  {
+    date: "18/07/2025",
+    day: "Sexta",
+    subject: "TypeScript",
+    time: "20:00 - 20:45",
+    completed: false
+  },
+  {
+    date: "18/07/2025",
+    day: "Sexta",
+    subject: "React",
+    time: "20:45 - 21:15",
+    completed: false
+  },
+  {
+    date: "18/07/2025",
+    day: "Sexta",
+    subject: "Projeto",
+    time: "21:15 - 21:45",
+    completed: false
+  },
+  {
+    date: "18/07/2025",
+    day: "Sexta",
+    subject: "Inglês",
+    time: "21:45 - 22:15",
+    completed: false
+  },
+  {
+    date: "18/07/2025",
+    day: "Sexta",
+    subject: "Firebase",
+    time: "22:15 - 22:30",
+    completed: false
+  },
+  {
+    date: "19/07/2025",
+    day: "Sábado",
+    subject: "Javascript",
+    time: "09:00 - 09:20",
+    completed: false
+  },
+  {
+    date: "19/07/2025",
+    day: "Sábado",
+    subject: "TypeScript",
+    time: "09:20 - 09:40",
+    completed: false
+  },
+  {
+    date: "19/07/2025",
+    day: "Sábado",
+    subject: "React",
+    time: "09:40 - 10:00",
+    completed: false
+  },
+  {
+    date: "19/07/2025",
+    day: "Sábado",
+    subject: "Projeto",
+    time: "10:00 - 10:30",
+    completed: false
+  },
+  {
+    date: "19/07/2025",
+    day: "Sábado",
+    subject: "Firebase",
+    time: "10:30 - 10:45",
+    completed: false
+  },
+  {
+    date: "19/07/2025",
+    day: "Sábado",
+    subject: "Inglês",
+    time: "10:45 - 11:00",
+    completed: false
+  },
+  {
+    date: "21/07/2025",
+    day: "Segunda",
+    subject: "Javascript",
+    time: "19:00 - 20:00",
+    completed: false
+  },
+  {
+    date: "21/07/2025",
+    day: "Segunda",
+    subject: "TypeScript",
+    time: "20:00 - 20:45",
+    completed: false
+  },
+  {
+    date: "21/07/2025",
+    day: "Segunda",
+    subject: "React",
+    time: "20:45 - 21:15",
+    completed: false
+  },
+  {
+    date: "21/07/2025",
+    day: "Segunda",
+    subject: "Projeto",
+    time: "21:15 - 21:45",
+    completed: false
+  },
+  {
+    date: "21/07/2025",
+    day: "Segunda",
+    subject: "Inglês",
+    time: "21:45 - 22:15",
+    completed: false
+  },
+  {
+    date: "21/07/2025",
+    day: "Segunda",
+    subject: "Firebase",
+    time: "22:15 - 22:30",
+    completed: false
+  },
+  {
+    date: "22/07/2025",
+    day: "Terça",
+    subject: "Javascript",
+    time: "19:00 - 20:00",
+    completed: false
+  },
+  {
+    date: "22/07/2025",
+    day: "Terça",
+    subject: "TypeScript",
+    time: "20:00 - 20:45",
+    completed: false
+  },
+  {
+    date: "22/07/2025",
+    day: "Terça",
+    subject: "React",
+    time: "20:45 - 21:15",
+    completed: false
+  },
+  {
+    date: "22/07/2025",
+    day: "Terça",
+    subject: "Projeto",
+    time: "21:15 - 21:45",
+    completed: false
+  },
+  {
+    date: "22/07/2025",
+    day: "Terça",
+    subject: "Inglês",
+    time: "21:45 - 22:15",
+    completed: false
+  },
+  {
+    date: "22/07/2025",
+    day: "Terça",
+    subject: "Firebase",
+    time: "22:15 - 22:30",
+    completed: false
+  },
+  {
+    date: "23/07/2025",
+    day: "Quarta",
+    subject: "Javascript",
+    time: "19:00 - 20:00",
+    completed: false
+  },
+  {
+    date: "23/07/2025",
+    day: "Quarta",
+    subject: "TypeScript",
+    time: "20:00 - 20:45",
+    completed: false
+  },
+  {
+    date: "23/07/2025",
+    day: "Quarta",
+    subject: "React",
+    time: "20:45 - 21:15",
+    completed: false
+  },
+  {
+    date: "23/07/2025",
+    day: "Quarta",
+    subject: "Projeto",
+    time: "21:15 - 21:45",
+    completed: false
+  },
+  {
+    date: "23/07/2025",
+    day: "Quarta",
+    subject: "Inglês",
+    time: "21:45 - 22:15",
+    completed: false
+  },
+  {
+    date: "23/07/2025",
+    day: "Quarta",
+    subject: "Firebase",
+    time: "22:15 - 22:30",
+    completed: false
+  },
+  {
+    date: "24/07/2025",
+    day: "Quinta",
+    subject: "Javascript",
+    time: "19:00 - 20:00",
+    completed: false
+  },
+  {
+    date: "24/07/2025",
+    day: "Quinta",
+    subject: "TypeScript",
+    time: "20:00 - 20:45",
+    completed: false
+  },
+  {
+    date: "24/07/2025",
+    day: "Quinta",
+    subject: "React",
+    time: "20:45 - 21:15",
+    completed: false
+  },
+  {
+    date: "24/07/2025",
+    day: "Quinta",
+    subject: "Projeto",
+    time: "21:15 - 21:45",
+    completed: false
+  },
+  {
+    date: "24/07/2025",
+    day: "Quinta",
+    subject: "Inglês",
+    time: "21:45 - 22:15",
+    completed: false
+  },
+  {
+    date: "24/07/2025",
+    day: "Quinta",
+    subject: "Firebase",
+    time: "22:15 - 22:30",
+    completed: false
+  },
+ 
+];
+
+async function importarTarefasFixas() {
+  let adicionados = 0;
+
+  for (let i = 0; i < tarefas.length; i++) {
+    const tarefa = tarefas[i];
+
+    try {
+      // await db.collection("estudos").add(tarefa);
+      await studyCollection.add(tarefa);
+      adicionados++;
+    } catch (error) {
+      console.error("Erro ao adicionar tarefa:", error);
+    }
+  }
+
+  alert(`${adicionados} tarefas importadas com sucesso!`);
+ 
+}
+
+
 // Formata data para dd/mm/aaaa
 function formatDateToBR(dateStr) {
   const date = new Date(dateStr);
