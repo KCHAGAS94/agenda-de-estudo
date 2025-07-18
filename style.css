@@ -67,16 +67,38 @@ button:hover {
   background-color: #1b5fbd;
 }
 
-/* Tabela */
+/* Tabela padrão (desktop) */
 table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  background: white; /* fundo branco no desktop */
+  box-shadow: 0 0 8px #180142;
   border-radius: 5px;
   overflow: hidden;
   margin-top: 20px;
 }
+
+/* Tabela em modo mobile */
+@media (max-width: 600px) {
+  table {
+    background: #180142; /* fundo azul no mobile */
+  }
+
+  tbody tr {
+    background: #180142; /* fundo azul para os blocos da tabela */
+  }
+
+  tbody tr td {
+    color: rgb(5, 0, 0); /* deixa o texto branco para contraste */
+  }
+
+  /* Labels antes das células */
+  tbody tr td::before {
+    color: #180142;
+    font-weight: bold;
+  }
+}
+
 
 th, td {
   padding: 10px;
@@ -109,28 +131,57 @@ table td input[type="checkbox"] {
 
 /* Responsividade tabela para mobile */
 @media (max-width: 600px) {
-  table, thead, tbody, th, td, tr {
+  table, thead, tbody {
     display: block;
+    width: 100%;
   }
-  thead tr {
-    display: none;
+
+  thead {
+    display: none; /* Oculta o cabeçalho */
   }
-  td {
-    position: relative;
-    padding-left: 50%;
+
+  tbody tr {
+    display: flex;               /* linha flexível */
+    flex-wrap: wrap;            /* se precisar, quebra linha */
+    background: #fff;
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px #180142;
+    border: 1px solid #180142;
+  }
+
+  tbody tr:hover {
+    box-shadow: 0 0 12px #180142;
+  }
+
+  tbody tr td {
+    flex: 1 1 18%;               /* ocupa 18% do espaço (5 colunas + espaço) */
+    padding: 6px 8px;
     text-align: left;
-    border-bottom: 1px solid #ccc;
+    border: none;
+    position: relative;
+    min-width: 100px;
+    box-sizing: border-box;
   }
-  td::before {
-    position: absolute;
-    left: 10px;
-    top: 10px;
-    white-space: nowrap;
-    font-weight: bold;
+
+  /* Labels (nomes das colunas) antes do conteúdo das células */
+  tbody tr td:nth-of-type(1)::before { content: "Data: "; font-weight: bold; }
+  tbody tr td:nth-of-type(2)::before { content: "Dia: "; font-weight: bold; }
+  tbody tr td:nth-of-type(3)::before { content: "Matéria: "; font-weight: bold; }
+  tbody tr td:nth-of-type(4)::before { content: "Horário: "; font-weight: bold; }
+  tbody tr td:nth-of-type(5)::before { content: "Concluído: "; font-weight: bold; }
+
+  /* Checkbox centralizado verticalmente */
+  tbody tr td:nth-of-type(5) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-  td:nth-of-type(1)::before { content: "Data"; }
-  td:nth-of-type(2)::before { content: "Dia"; }
-  td:nth-of-type(3)::before { content: "Matéria"; }
-  td:nth-of-type(4)::before { content: "Horário"; }
-  td:nth-of-type(5)::before { content: "Concluído"; }
+
+  /* Checkbox maior */
+  tbody tr td:nth-of-type(5) input[type="checkbox"] {
+    transform: scale(1.5);
+    cursor: pointer;
+  }
 }
