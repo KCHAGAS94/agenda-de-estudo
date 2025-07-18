@@ -1,5 +1,4 @@
 const tableBody = document.getElementById('studyTableBody');
-const form = document.getElementById('scheduleForm');
 const dateInput = document.getElementById('date');
 const dayInput = document.getElementById('day');
 const subjectInput = document.getElementById('subject');
@@ -8,12 +7,11 @@ const filterDate = document.getElementById('filterDate');
 const filterDay = document.getElementById('filterDay');
 const filterSubject = document.getElementById('filterSubject');
 const progressChartCanvas = document.getElementById('progressChart');
+const addTaskBtn = document.getElementById('addTaskBtn');
 
 let studyData = [];
 
-form.addEventListener('submit', function (e) {
-  e.preventDefault();
-
+addTaskBtn.addEventListener('click', function () {
   const date = formatDateToBR(dateInput.value);
   const day = dayInput.value;
   const subject = subjectInput.value.trim();
@@ -27,7 +25,12 @@ form.addEventListener('submit', function (e) {
   const entry = { date, day, subject, time, completed: false };
   studyData.push(entry);
   renderTable();
-  form.reset();
+
+  // Limpar campos
+  dateInput.value = '';
+  dayInput.value = '';
+  subjectInput.value = '';
+  timeInput.value = '';
 });
 
 function formatDateToBR(dateStr) {
@@ -46,7 +49,7 @@ function renderTable() {
     return (
       (!filterDate.value || entry.date === formatDateToBR(filterDate.value)) &&
       (!filterDay.value || entry.day === filterDay.value) &&
-      (!filterSubject.value || entry.subject === filterSubject.value)
+      (!filterSubject.value || entry.subject.toLowerCase().includes(filterSubject.value.toLowerCase()))
     );
   });
 
