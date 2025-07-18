@@ -1,28 +1,138 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Plano de Estudos - Até 27/08/2025</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Painel de Estudos</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+    .form-container, .filters {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    label {
+      margin-right: 8px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="date"], select {
+      padding: 6px;
+      margin-right: 15px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      min-width: 120px;
+    }
+    button {
+      padding: 8px 15px;
+      background-color: #2d89ef;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #1b5fbd;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #2d89ef;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    #progressChart {
+      width: 100% !important;
+      max-width: 500px;
+      height: 300px !important;
+      margin: 30px auto;
+      display: block;
+    }
+  </style>
 </head>
 <body>
   <h1>Plano de Estudos</h1>
-  <h2>De 14/07 até 27/08/2025</h2>
 
-  <table id="study-table">
+  <div class="form-container">
+    <label for="date">Data:</label>
+    <input type="date" id="date" required />
+
+    <label for="day">Dia:</label>
+    <select id="day" required>
+      <option value="">Selecione</option>
+      <option value="Segunda">Segunda</option>
+      <option value="Terça">Terça</option>
+      <option value="Quarta">Quarta</option>
+      <option value="Quinta">Quinta</option>
+      <option value="Sexta">Sexta</option>
+      <option value="Sábado">Sábado</option>
+    </select>
+
+    <label for="subject">Matéria:</label>
+    <input type="text" id="subject" placeholder="Digite a matéria" required />
+
+    <label for="time">Horário:</label>
+    <input type="text" id="time" placeholder="Ex: 19:00 - 22:30" required />
+
+    <button type="submit" form="scheduleForm" id="addButton">Adicionar Estudo</button>
+  </div>
+
+  <div class="filters">
+    <label for="filterDate">Filtrar por Data:</label>
+    <input type="date" id="filterDate" />
+
+    <label for="filterDay">Filtrar por Dia:</label>
+    <select id="filterDay">
+      <option value="">Todos</option>
+      <option value="Segunda">Segunda</option>
+      <option value="Terça">Terça</option>
+      <option value="Quarta">Quarta</option>
+      <option value="Quinta">Quinta</option>
+      <option value="Sexta">Sexta</option>
+      <option value="Sábado">Sábado</option>
+    </select>
+
+    <label for="filterSubject">Filtrar por Matéria:</label>
+    <input type="text" id="filterSubject" placeholder="Digite a matéria" />
+  </div>
+
+  <table id="studyTable">
     <thead>
       <tr>
         <th>Data</th>
         <th>Dia</th>
         <th>Matéria</th>
         <th>Horário</th>
-        <th>Check</th>
+        <th>Concluído</th>
       </tr>
     </thead>
-    <tbody id="table-body"></tbody>
+    <tbody id="studyTableBody">
+      <!-- Conteúdo gerado via JavaScript -->
+    </tbody>
   </table>
 
+  <h2>Progresso</h2>
   <canvas id="progressChart"></canvas>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
