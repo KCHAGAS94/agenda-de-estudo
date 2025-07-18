@@ -1,4 +1,8 @@
-// Referências DOM
+// Inicialização Firebase (deve estar no seu HTML, antes deste script)
+// const firebaseConfig = { ... };
+// firebase.initializeApp(firebaseConfig);
+// const db = firebase.firestore();
+
 const tableBody = document.getElementById('studyTableBody');
 const dateInput = document.getElementById('date');
 const dayInput = document.getElementById('day');
@@ -10,12 +14,12 @@ const filterSubject = document.getElementById('filterSubject');
 const progressChartCanvas = document.getElementById('progressChart');
 const addTaskBtn = document.getElementById('addTaskBtn');
 
-// Referência Firestore
+// Referência à coleção Firestore
 const studyCollection = db.collection('planosEstudos');
 
 let studyData = [];
 
-// Carregar dados do Firestore
+// Função para carregar os estudos do Firestore
 function carregarEstudos() {
   studyCollection.get().then(snapshot => {
     studyData = [];
@@ -28,22 +32,22 @@ function carregarEstudos() {
   });
 }
 
-// Adicionar estudo no Firestore
+// Função para adicionar estudo no Firestore
 function adicionarEstudoFirebase(entry) {
   return studyCollection.add(entry);
 }
 
-// Atualizar status concluído no Firestore
+// Função para atualizar o campo 'completed' no Firestore
 function atualizarConclusaoFirebase(id, completed) {
   return studyCollection.doc(id).update({ completed });
 }
 
-// Evento botão adicionar tarefa
+// Evento do botão para adicionar tarefa (salva no Firestore)
 addTaskBtn.addEventListener('click', async function () {
   const date = formatDateToBR(dateInput.value);
   const day = dayInput.value;
   const subject = subjectInput.value.trim();
-  const time = timeInput.value.trim();
+  const time = timeInput.value;
 
   if (!date || !day || !subject || !time) {
     alert("Preencha todos os campos.");
@@ -57,7 +61,7 @@ addTaskBtn.addEventListener('click', async function () {
     studyData.push({ id: docRef.id, ...entry });
     renderTable();
 
-    // limpar campos
+    // Limpar campos
     dateInput.value = '';
     dayInput.value = '';
     subjectInput.value = '';
@@ -67,7 +71,7 @@ addTaskBtn.addEventListener('click', async function () {
   }
 });
 
-// Renderizar tabela com filtros
+// Renderiza a tabela com os dados filtrados
 function renderTable() {
   tableBody.innerHTML = '';
 
@@ -96,7 +100,7 @@ function renderTable() {
   updateChart();
 }
 
-// Alternar conclusão tarefa
+// Alterna o status de conclusão e atualiza no Firestore
 function toggleCompletion(index) {
   const item = studyData[index];
   const newStatus = !item.completed;
@@ -108,7 +112,7 @@ function toggleCompletion(index) {
     .catch(err => alert('Erro ao atualizar: ' + err.message));
 }
 
-// Atualizar gráfico progresso
+// Atualiza o gráfico de progresso
 function updateChart() {
   const subjectProgress = {};
 
@@ -144,14 +148,20 @@ function updateChart() {
       responsive: true,
       maintainAspectRatio: false,
       scales: {
-        y: { beginAtZero: true, max: 100 }
+        y: {
+          beginAtZero: true,
+          max: 100
+        }
       },
-      plugins: { legend: { display: false } }
+      plugins: {
+        legend: {
+          display: false
+        }
+      }
     }
   });
 }
 
-// Botão mostrar/ocultar gráfico
 const toggleChartBtn = document.getElementById('toggleChartBtn');
 const progressChart = document.getElementById('progressChart');
 
@@ -165,89 +175,65 @@ toggleChartBtn.addEventListener('click', () => {
   }
 });
 
-// Formatar data para dd/mm/yyyy
-function formatDateToBR(dateStr) {
-  if (!dateStr) return "";
-  // Se já no formato dd/mm/yyyy
-  if (dateStr.includes('/')) {
-    return dateStr;
-  }
-  const parts = dateStr.split("-");
-  if (parts.length === 3) {
-    return `${parts[2]}/${parts[1]}/${parts[0]}`;
-  }
-  return dateStr;
-}
-
-// Importar CSV
-window.importarCSV = () => {
-  const fileInput = document.getElementById('xlsxFile');
+// Função para importar Excel e salvar corretamente no Firestore
+window.importarXLSX = async () => {
+  const fileInput = document.getElementById("excelInput");
   const file = fileInput.files[0];
 
   if (!file) {
-    alert("Selecione um arquivo CSV!");
+    alert("Selecione um arquivo .xlsx!");
     return;
   }
 
   const reader = new FileReader();
   reader.onload = async (e) => {
-    const text = e.target.result;
-    const lines = text.split(/\r\n|\n/);
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: "array" });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-    let adicionados = 0;
+    for (let i = 1; i < rows.length; i++) {
+      const [data, dia, materia, horario] = rows[i];
 
-    // Pula a primeira linha se for cabeçalho (verifica se tem "date" no início)
-    let startIndex = 0;
-    if (lines[0].toLowerCase().startsWith('date')) startIndex = 1;
-
-    for (let i = startIndex; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue; // pula linha vazia
-
-      const cols = line.split(',');
-
-      if (cols.length < 4) continue;
-
-      let [date, day, subject, time] = cols;
-
-      date = date.trim();
-      day = day.trim();
-      subject = subject.trim();
-      time = time.trim();
-
-      // Formatando data
-      const formattedDate = formatDateToBR(date);
-
-      if (formattedDate && day && subject && time) {
+      if (data && dia && materia && horario) {
         try {
           await adicionarEstudoFirebase({
-            date: formattedDate,
-            day,
-            subject,
-            time,
+            date: data,
+            day: dia,
+            subject: materia,
+            time: horario,
             completed: false
           });
-          adicionados++;
         } catch (error) {
           console.error("Erro ao salvar no Firebase:", error);
         }
       }
     }
 
-    alert(`Importação concluída! ${adicionados} tarefas adicionadas.`);
+    alert("Importação concluída com sucesso!");
     carregarEstudos();
   };
 
-  reader.readAsText(file);
+  reader.readAsArrayBuffer(file);
 };
 
-// Adiciona eventos de filtro
+// Formata data para dd/mm/aaaa
+function formatDateToBR(dateStr) {
+  const date = new Date(dateStr);
+  if (isNaN(date)) return "";
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+// Atualização automática dos filtros
 [filterDate, filterDay, filterSubject].forEach(filter => {
   filter.addEventListener('change', renderTable);
 });
 
-// Expor toggleCompletion globalmente para o checkbox funcionar
+// Torna toggleCompletion acessível globalmente
 window.toggleCompletion = toggleCompletion;
 
-// Carrega estudos ao iniciar
+// Carrega os estudos ao iniciar
 carregarEstudos();
