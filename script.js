@@ -162,6 +162,22 @@ function updateChart() {
   });
 }
 
+const toggleChartBtn = document.getElementById('toggleChartBtn');
+const progressChart = document.getElementById('progressChart');
+
+toggleChartBtn.addEventListener('click', () => {
+  if (progressChart.style.display === 'none' || progressChart.style.display === '') {
+    // Mostrar gráfico
+    progressChart.style.display = 'block';
+    toggleChartBtn.innerHTML = 'Ocultar';  // Botão com símbolo para ocultar
+  } else {
+    // Ocultar gráfico
+    progressChart.style.display = 'none';
+    toggleChartBtn.innerHTML = 'Exibir';  // Botão com símbolo para mostrar
+  }
+});
+
+
 // Formata data para dd/mm/aaaa
 function formatDateToBR(dateStr) {
   const date = new Date(dateStr);

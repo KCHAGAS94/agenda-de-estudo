@@ -2,8 +2,26 @@
 body {
   font-family: Arial, sans-serif;
   margin: 20px;
-  background: #f9f9f9;
-  padding: 0;
+  background: #180142;
+  padding: 60px;
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: white; /* ou a cor do seu fundo */
+  z-index: -1; /* pra ficar na frente */
+  padding: 10px 0;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* opcional, sombra para destacar */
+  text-align: center;
+}
+
+h1 {
+  color: #fcfbfb;
+  font-size: 150%;
+  margin-bottom: 20px;
 }
 
 /* Container para formulários e filtros */

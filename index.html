@@ -17,31 +17,8 @@
   
 </head>
 <body>
+  <header>
   <h1>Plano de Estudos</h1>
-
-  <div class="form-container">
-    <label for="date">Data:'</label>
-    <input type="date" id="date" required />
-
-    <label for="day">Dia:</label>
-    <select id="day" required>
-      <option value="">Selecione</option>
-      <option value="Segunda">Segunda</option>
-      <option value="Terça">Terça</option>
-      <option value="Quarta">Quarta</option>
-      <option value="Quinta">Quinta</option>
-      <option value="Sexta">Sexta</option>
-      <option value="Sábado">Sábado</option>
-    </select>
-
-    <label for="subject">Matéria:</label>
-    <input type="text" id="subject" placeholder="Digite a matéria" required />
-
-    <label for="time">Horário:</label>
-    <input type="text" id="time" placeholder="Ex: 19:00 - 22:30" required />
-
-    <button id="addTaskBtn">Adicionar Tarefa</button>
-  </div>
 
   <div class="filters">
     <label for="filterDate">Filtrar por Data:</label>
@@ -56,11 +33,45 @@
       <option value="Quinta">Quinta</option>
       <option value="Sexta">Sexta</option>
       <option value="Sábado">Sábado</option>
+      <option value="Domingo">Domingo</option>
     </select>
 
     <label for="filterSubject">Filtrar por Matéria:</label>
     <input type="text" id="filterSubject" placeholder="Digite a matéria" />
   </div>
+  </header>
+
+  <h1>
+  Progresso
+  <button id="toggleChartBtn">Exibir</button>
+  </h1>
+  <canvas id="progressChart" style="display:none"></canvas>
+  
+
+  <div class="form-container">
+    <label for="date">Data:'</label>
+    <input type="date" id="date" required />
+
+    <label for="day">Dia:</label>
+    <select id="day" required>
+      <option value="">Selecione</option>
+      <option value="Segunda">Segunda</option>
+      <option value="Terça">Terça</option>
+      <option value="Quarta">Quarta</option>
+      <option value="Quinta">Quinta</option>
+      <option value="Sexta">Sexta</option>
+      <option value="Sábado">Sábado</option>
+      <option value="Domingo">Domingo</option>
+    </select>
+
+    <label for="subject">Matéria:</label>
+    <input type="text" id="subject" placeholder="Digite a matéria" required />
+
+    <label for="time">Horário:</label>
+    <input type="text" id="time" placeholder="Ex: 19:00 - 22:30" required />
+
+    <button id="addTaskBtn">Adicionar Tarefa</button>
+    </div>
 
   <table id="studyTable">
     <thead>
@@ -77,8 +88,7 @@
     </tbody>
   </table>
 
-  <h2>Progresso</h2>
-  <canvas id="progressChart"></canvas>
+  
 
   <!-- Seu script personalizado -->
   <script src="script.js"></script>
