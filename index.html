@@ -6,12 +6,21 @@
   <title>Painel de Estudos</title>
   <link rel="stylesheet" href="style.css" />
     
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script src="firebaseagenda.js"></script>
+  
+  <!-- Carregue o Chart.js ANTES do seu script -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
 </head>
 <body>
   <h1>Plano de Estudos</h1>
 
   <div class="form-container">
-    <label for="date">Data:</label>
+    <label for="date">Data:'</label>
     <input type="date" id="date" required />
 
     <label for="day">Dia:</label>
@@ -31,9 +40,7 @@
     <label for="time">Horário:</label>
     <input type="text" id="time" placeholder="Ex: 19:00 - 22:30" required />
 
-    <!-- <button type="submit" form="scheduleForm" id="addButton">Adicionar Estudo</button> -->
-     <button id="addTaskBtn">Adicionar Tarefa</button>
-
+    <button id="addTaskBtn">Adicionar Tarefa</button>
   </div>
 
   <div class="filters">
@@ -73,7 +80,7 @@
   <h2>Progresso</h2>
   <canvas id="progressChart"></canvas>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Seu script personalizado -->
   <script src="script.js"></script>
 </body>
 </html>
