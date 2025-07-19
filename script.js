@@ -166,7 +166,7 @@ function renderTable() {
 
   filteredData.sort(compareEntries);
 
-  filteredData.forEach((entry, index) => {
+  filteredData.forEach(entry => {
     const row = document.createElement('tr');
 
     row.innerHTML = `
@@ -174,7 +174,7 @@ function renderTable() {
       <td>${entry.day}</td>
       <td>${entry.subject}</td>
       <td>${entry.time}</td>
-      <td><input type="checkbox" ${entry.completed ? 'checked' : ''} onchange="toggleCompletion(${index})"></td>
+      <td><input type="checkbox" ${entry.completed ? 'checked' : ''} onchange="toggleCompletion('${entry.id}', this.checked)"></td>
       <td><button onclick="editarTarefa('${entry.id}')">Alterar</button></td>
     `;
 
@@ -185,12 +185,14 @@ function renderTable() {
 }
 
 // Alterna o status de conclusão e atualiza no Firestore
-function toggleCompletion(index) {
-  const item = studyData[index];
-  const newStatus = !item.completed;
-  atualizarConclusaoFirebase(item.id, newStatus)
+function toggleCompletion(id, completed) {
+  atualizarConclusaoFirebase(id, completed)
     .then(() => {
-      studyData[index].completed = newStatus;
+      // Atualiza localmente no array studyData
+      const index = studyData.findIndex(item => item.id === id);
+      if (index > -1) {
+        studyData[index].completed = completed;
+      }
       renderTable();
     })
     .catch(err => alert('Erro ao atualizar: ' + err.message));
