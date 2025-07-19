@@ -122,7 +122,37 @@ addTaskBtn.addEventListener('click', async function () {
   }
 });
 
-// Renderiza a tabela com os dados filtrados
+// Função auxiliar para converter "dd/mm/yyyy" => "yyyy-mm-dd" (string para comparação simples)
+function convertDateBRtoISO(dateBR) {
+  const [day, month, year] = dateBR.split('/');
+  return `${year}-${month}-${day}`;
+}
+
+// Função auxiliar para extrair hora inicial do campo time (ex: "19:00 - 22:30" => "19:00")
+function extractStartTime(timeStr) {
+  if (!timeStr) return "00:00";
+  return timeStr.split('-')[0].trim();
+}
+
+// Função de comparação para ordenar pelo date e time
+function compareEntries(a, b) {
+  const dateA = convertDateBRtoISO(a.date);
+  const dateB = convertDateBRtoISO(b.date);
+
+  if (dateA < dateB) return -1;
+  if (dateA > dateB) return 1;
+
+  // datas iguais, ordenar pelo horário inicial
+  const timeA = extractStartTime(a.time);
+  const timeB = extractStartTime(b.time);
+
+  if (timeA < timeB) return -1;
+  if (timeA > timeB) return 1;
+
+  return 0;
+}
+
+// Renderiza a tabela com os dados filtrados, ordenados por data e horário
 function renderTable() {
   tableBody.innerHTML = '';
 
@@ -133,6 +163,8 @@ function renderTable() {
       (!filterSubject.value || entry.subject.toLowerCase().includes(filterSubject.value.toLowerCase()))
     );
   });
+
+  filteredData.sort(compareEntries);
 
   filteredData.forEach((entry, index) => {
     const row = document.createElement('tr');
