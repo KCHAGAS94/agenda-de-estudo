@@ -1,4 +1,3 @@
-
 // Inicialização Firebase (deve estar no seu HTML, antes deste script)
 // const firebaseConfig = { ... };
 // firebase.initializeApp(firebaseConfig);
@@ -15,6 +14,9 @@ const filterSubject = document.getElementById('filterSubject');
 const progressChartCanvas = document.getElementById('progressChart');
 const addTaskBtn = document.getElementById('addTaskBtn');
 
+const subjectList = document.getElementById('subjectList');
+const timeList = document.getElementById('timeList');
+
 // Referência à coleção Firestore
 const studyCollection = db.collection('planosEstudos');
 
@@ -28,8 +30,34 @@ function carregarEstudos() {
       studyData.push({ id: doc.id, ...doc.data() });
     });
     renderTable();
+    atualizarSugestoes();
   }).catch(error => {
     alert("Erro ao carregar dados do Firebase: " + error.message);
+  });
+}
+
+// Atualiza as sugestões para os inputs subject e time
+function atualizarSugestoes() {
+  // Extrai valores únicos e não vazios
+  const subjects = [...new Set(studyData.map(e => e.subject.trim()).filter(s => s))];
+  const times = [...new Set(studyData.map(e => e.time.trim()).filter(t => t))];
+
+  // Limpa os datalists
+  subjectList.innerHTML = '';
+  timeList.innerHTML = '';
+
+  // Preenche o datalist de matéria
+  subjects.forEach(subject => {
+    const option = document.createElement('option');
+    option.value = subject;
+    subjectList.appendChild(option);
+  });
+
+  // Preenche o datalist de horário
+  times.forEach(time => {
+    const option = document.createElement('option');
+    option.value = time;
+    timeList.appendChild(option);
   });
 }
 
@@ -48,7 +76,7 @@ addTaskBtn.addEventListener('click', async function () {
   const date = formatDateToBR(dateInput.value);
   const day = dayInput.value;
   const subject = subjectInput.value.trim();
-  const time = timeInput.value;
+  const time = timeInput.value.trim();
 
   if (!date || !day || !subject || !time) {
     alert("Preencha todos os campos.");
@@ -61,6 +89,8 @@ addTaskBtn.addEventListener('click', async function () {
     const docRef = await adicionarEstudoFirebase(entry);
     studyData.push({ id: docRef.id, ...entry });
     renderTable();
+
+    atualizarSugestoes();
 
     // Limpar campos
     dateInput.value = '';

@@ -65,10 +65,13 @@
     </select>
 
     <label for="subject">Matéria:</label>
-    <input type="text" id="subject" placeholder="Digite a matéria" required />
+    <input type="text" id="subject" list="subjectList" placeholder="Digite a matéria" required />
+    <datalist id="subjectList"></datalist>
 
     <label for="time">Horário:</label>
-    <input type="text" id="time" placeholder="Ex: 19:00 - 22:30" required />
+    <input type="text" id="time" list="timeList" placeholder="Ex: 19:00 - 22:30" required />
+    <datalist id="timeList"></datalist>'
+
 
     <button id="addTaskBtn">Adicionar Tarefa</button>
     
