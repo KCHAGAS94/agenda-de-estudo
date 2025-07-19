@@ -21,6 +21,7 @@ const timeList = document.getElementById('timeList');
 const studyCollection = db.collection('planosEstudos');
 
 let studyData = [];
+let editingId = null; // Guarda o id do item sendo editado, ou null se for novo
 
 // Função para carregar os estudos do Firestore
 function carregarEstudos() {
@@ -66,12 +67,17 @@ function adicionarEstudoFirebase(entry) {
   return studyCollection.add(entry);
 }
 
+// Função para atualizar estudo existente no Firestore
+function atualizarEstudoFirebase(id, entry) {
+  return studyCollection.doc(id).update(entry);
+}
+
 // Função para atualizar o campo 'completed' no Firestore
 function atualizarConclusaoFirebase(id, completed) {
   return studyCollection.doc(id).update({ completed });
 }
 
-// Evento do botão para adicionar tarefa (salva no Firestore)
+// Evento do botão para adicionar/alterar tarefa (salva no Firestore)
 addTaskBtn.addEventListener('click', async function () {
   const date = formatDateToBR(dateInput.value);
   const day = dayInput.value;
@@ -86,10 +92,23 @@ addTaskBtn.addEventListener('click', async function () {
   const entry = { date, day, subject, time, completed: false };
 
   try {
-    const docRef = await adicionarEstudoFirebase(entry);
-    studyData.push({ id: docRef.id, ...entry });
-    renderTable();
+    if (editingId) {
+      // Se estiver editando, atualiza o registro existente
+      await atualizarEstudoFirebase(editingId, entry);
+      // Atualiza localmente o item na lista
+      const index = studyData.findIndex(item => item.id === editingId);
+      if (index > -1) {
+        studyData[index] = { id: editingId, ...entry, completed: studyData[index].completed };
+      }
+      editingId = null;
+      addTaskBtn.textContent = 'Adicionar Tarefa';
+    } else {
+      // Se for novo, adiciona no Firestore
+      const docRef = await adicionarEstudoFirebase(entry);
+      studyData.push({ id: docRef.id, ...entry });
+    }
 
+    renderTable();
     atualizarSugestoes();
 
     // Limpar campos
@@ -97,6 +116,7 @@ addTaskBtn.addEventListener('click', async function () {
     dayInput.value = '';
     subjectInput.value = '';
     timeInput.value = '';
+
   } catch (error) {
     alert('Erro ao salvar no banco: ' + error.message);
   }
@@ -123,6 +143,7 @@ function renderTable() {
       <td>${entry.subject}</td>
       <td>${entry.time}</td>
       <td><input type="checkbox" ${entry.completed ? 'checked' : ''} onchange="toggleCompletion(${index})"></td>
+      <td><button onclick="editarTarefa('${entry.id}')">Alterar</button></td>
     `;
 
     tableBody.appendChild(row);
@@ -141,6 +162,24 @@ function toggleCompletion(index) {
       renderTable();
     })
     .catch(err => alert('Erro ao atualizar: ' + err.message));
+}
+
+// Função para iniciar edição de uma tarefa
+function editarTarefa(id) {
+  const tarefa = studyData.find(item => item.id === id);
+  if (!tarefa) return;
+
+  // Ajusta o formato da data para yyyy-mm-dd para o input date
+  const partes = tarefa.date.split('/');
+  const dataFormatada = `${partes[2]}-${partes[1]}-${partes[0]}`;
+
+  dateInput.value = dataFormatada;
+  dayInput.value = tarefa.day;
+  subjectInput.value = tarefa.subject;
+  timeInput.value = tarefa.time;
+
+  editingId = id;
+  addTaskBtn.textContent = 'Salvar Alteração';
 }
 
 // Atualiza o gráfico de progresso
@@ -226,6 +265,9 @@ function formatDateToBR(dateStr) {
 
 // Torna toggleCompletion acessível globalmente para onchange inline no checkbox
 window.toggleCompletion = toggleCompletion;
+
+// Torna editarTarefa acessível globalmente para onclick inline no botão Alterar
+window.editarTarefa = editarTarefa;
 
 // Carrega os estudos ao iniciar
 carregarEstudos();
