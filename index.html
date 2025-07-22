@@ -77,22 +77,29 @@
     
     </div>
 
-  <table id="studyTable">
-    <thead>
-      <tr>
-        <th>Data</th>
-        <th>Dia</th>
-        <th>Matéria</th>
-        <th>Horário</th>
-        <th>Concluído</th>
-      </tr>
-    </thead>
-    <tbody id="studyTableBody">
-      <!-- Conteúdo gerado via JavaScript -->
-    </tbody>
-  </table>
+    <div id="mainContainer">
+      <table id="studyTable">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Dia</th>
+            <th>Matéria</th>
+            <th>Horário</th>
+            <th>Concluído</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="studyTableBody">
+          <!-- Conteúdo gerado via JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  <div id="noteContainer" style="display:none;">
+  <h1>Anotações da Tarefa</h1>
+  <textarea id="noteText" rows="10" style="width: 100%; padding: 10px;"></textarea><br />
+  <button id="backButton">Voltar para lista</button>
+  </div>
 
-  
 
   <!-- Seu script personalizado -->
   <script src="script.js"></script>

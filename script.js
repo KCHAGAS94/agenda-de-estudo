@@ -13,17 +13,19 @@ const filterDay = document.getElementById('filterDay');
 const filterSubject = document.getElementById('filterSubject');
 const progressChartCanvas = document.getElementById('progressChart');
 const addTaskBtn = document.getElementById('addTaskBtn');
-
 const subjectList = document.getElementById('subjectList');
 const timeList = document.getElementById('timeList');
+const noteContainer = document.getElementById("noteContainer");
+const noteTextarea = document.getElementById("noteText");
+const backButton = document.getElementById("backButton");
+const mainContainer = document.getElementById("mainContainer");
 
-// Referência à coleção Firestore
 const studyCollection = db.collection('planosEstudos');
 
 let studyData = [];
-let editingId = null; // Guarda o id do item sendo editado, ou null se for novo
+let editingId = null;
+let currentNoteTaskId = null;
 
-// Função para carregar os estudos do Firestore
 function carregarEstudos() {
   studyCollection.get().then(snapshot => {
     studyData = [];
@@ -37,24 +39,19 @@ function carregarEstudos() {
   });
 }
 
-// Atualiza as sugestões para os inputs subject e time
 function atualizarSugestoes() {
-  // Extrai valores únicos e não vazios
   const subjects = [...new Set(studyData.map(e => e.subject.trim()).filter(s => s))];
   const times = [...new Set(studyData.map(e => e.time.trim()).filter(t => t))];
 
-  // Limpa os datalists
   subjectList.innerHTML = '';
   timeList.innerHTML = '';
 
-  // Preenche o datalist de matéria
   subjects.forEach(subject => {
     const option = document.createElement('option');
     option.value = subject;
     subjectList.appendChild(option);
   });
 
-  // Preenche o datalist de horário
   times.forEach(time => {
     const option = document.createElement('option');
     option.value = time;
@@ -62,22 +59,18 @@ function atualizarSugestoes() {
   });
 }
 
-// Função para adicionar estudo no Firestore
 function adicionarEstudoFirebase(entry) {
   return studyCollection.add(entry);
 }
 
-// Função para atualizar estudo existente no Firestore
 function atualizarEstudoFirebase(id, entry) {
   return studyCollection.doc(id).update(entry);
 }
 
-// Função para atualizar o campo 'completed' no Firestore
 function atualizarConclusaoFirebase(id, completed) {
   return studyCollection.doc(id).update({ completed });
 }
 
-// Evento do botão para adicionar/alterar tarefa (salva no Firestore)
 addTaskBtn.addEventListener('click', async function () {
   const date = formatDateToBR(dateInput.value);
   const day = dayInput.value;
@@ -89,13 +82,11 @@ addTaskBtn.addEventListener('click', async function () {
     return;
   }
 
-  const entry = { date, day, subject, time, completed: false };
+  const entry = { date, day, subject, time, completed: false, anotacoes: "" };
 
   try {
     if (editingId) {
-      // Se estiver editando, atualiza o registro existente
       await atualizarEstudoFirebase(editingId, entry);
-      // Atualiza localmente o item na lista
       const index = studyData.findIndex(item => item.id === editingId);
       if (index > -1) {
         studyData[index] = { id: editingId, ...entry, completed: studyData[index].completed };
@@ -103,15 +94,12 @@ addTaskBtn.addEventListener('click', async function () {
       editingId = null;
       addTaskBtn.textContent = 'Adicionar Tarefa';
     } else {
-      // Se for novo, adiciona no Firestore
       const docRef = await adicionarEstudoFirebase(entry);
       studyData.push({ id: docRef.id, ...entry });
     }
 
     renderTable();
     atualizarSugestoes();
-
-    // Limpar campos
     dateInput.value = '';
     dayInput.value = '';
     subjectInput.value = '';
@@ -122,19 +110,16 @@ addTaskBtn.addEventListener('click', async function () {
   }
 });
 
-// Função auxiliar para converter "dd/mm/yyyy" => "yyyy-mm-dd" (string para comparação simples)
 function convertDateBRtoISO(dateBR) {
   const [day, month, year] = dateBR.split('/');
   return `${year}-${month}-${day}`;
 }
 
-// Função auxiliar para extrair hora inicial do campo time (ex: "19:00 - 22:30" => "19:00")
 function extractStartTime(timeStr) {
   if (!timeStr) return "00:00";
   return timeStr.split('-')[0].trim();
 }
 
-// Função de comparação para ordenar pelo date e time
 function compareEntries(a, b) {
   const dateA = convertDateBRtoISO(a.date);
   const dateB = convertDateBRtoISO(b.date);
@@ -142,7 +127,6 @@ function compareEntries(a, b) {
   if (dateA < dateB) return -1;
   if (dateA > dateB) return 1;
 
-  // datas iguais, ordenar pelo horário inicial
   const timeA = extractStartTime(a.time);
   const timeB = extractStartTime(b.time);
 
@@ -152,7 +136,6 @@ function compareEntries(a, b) {
   return 0;
 }
 
-// Renderiza a tabela com os dados filtrados, ordenados por data e horário
 function renderTable() {
   tableBody.innerHTML = '';
 
@@ -175,7 +158,10 @@ function renderTable() {
       <td>${entry.subject}</td>
       <td>${entry.time}</td>
       <td><input type="checkbox" ${entry.completed ? 'checked' : ''} onchange="toggleCompletion('${entry.id}', this.checked)"></td>
-      <td><button onclick="editarTarefa('${entry.id}')">Alterar</button></td>
+      <td>
+        <button onclick="editarTarefa('${entry.id}')">Alterar</button>
+        <button onclick="abrirAnotacao('${entry.id}')">Anotações</button>
+      </td>
     `;
 
     tableBody.appendChild(row);
@@ -184,11 +170,9 @@ function renderTable() {
   updateChart();
 }
 
-// Alterna o status de conclusão e atualiza no Firestore
 function toggleCompletion(id, completed) {
   atualizarConclusaoFirebase(id, completed)
     .then(() => {
-      // Atualiza localmente no array studyData
       const index = studyData.findIndex(item => item.id === id);
       if (index > -1) {
         studyData[index].completed = completed;
@@ -198,12 +182,10 @@ function toggleCompletion(id, completed) {
     .catch(err => alert('Erro ao atualizar: ' + err.message));
 }
 
-// Função para iniciar edição de uma tarefa
 function editarTarefa(id) {
   const tarefa = studyData.find(item => item.id === id);
   if (!tarefa) return;
 
-  // Ajusta o formato da data para yyyy-mm-dd para o input date
   const partes = tarefa.date.split('/');
   const dataFormatada = `${partes[2]}-${partes[1]}-${partes[0]}`;
 
@@ -216,7 +198,29 @@ function editarTarefa(id) {
   addTaskBtn.textContent = 'Salvar Alteração';
 }
 
-// Atualiza o gráfico de progresso
+function abrirAnotacao(id) {
+  currentNoteTaskId = id;
+  const tarefa = studyData.find(t => t.id === id);
+  if (!tarefa) return;
+
+  noteTextarea.value = tarefa.anotacoes || "";
+  mainContainer.style.display = "none";
+  noteContainer.style.display = "block";
+}
+
+backButton.addEventListener("click", async () => {
+  if (currentNoteTaskId) {
+    const anotacoes = noteTextarea.value;
+    await atualizarEstudoFirebase(currentNoteTaskId, { anotacoes });
+    const index = studyData.findIndex(t => t.id === currentNoteTaskId);
+    if (index > -1) studyData[index].anotacoes = anotacoes;
+  }
+  noteContainer.style.display = "none";
+  mainContainer.style.display = "block";
+  currentNoteTaskId = null;
+  renderTable();
+});
+
 function updateChart() {
   const subjectProgress = {};
 
@@ -234,9 +238,7 @@ function updateChart() {
     return Math.round((completed / total) * 100);
   });
 
-  if (window.myChart) {
-    window.myChart.destroy();
-  }
+  if (window.myChart) window.myChart.destroy();
 
   window.myChart = new Chart(progressChartCanvas, {
     type: 'bar',
@@ -271,20 +273,17 @@ const progressChart = document.getElementById('progressChart');
 
 toggleChartBtn.addEventListener('click', () => {
   if (progressChart.style.display === 'none' || progressChart.style.display === '') {
-    // Mostrar gráfico
     progressChart.style.display = 'block';
-    toggleChartBtn.innerHTML = 'Ocultar';  // Botão com símbolo para ocultar
+    toggleChartBtn.innerHTML = 'Ocultar';
   } else {
-    // Ocultar gráfico
     progressChart.style.display = 'none';
-    toggleChartBtn.innerHTML = 'Exibir';  // Botão com símbolo para mostrar
+    toggleChartBtn.innerHTML = 'Exibir';
   }
 });
 
-// Formata data para dd/mm/aaaa (sem usar new Date para evitar problema de fuso)
 function formatDateToBR(dateStr) {
   if (!dateStr) return "";
-  const parts = dateStr.split('-'); // yyyy-mm-dd
+  const parts = dateStr.split('-');
   if (parts.length !== 3) return "";
   const year = parts[0];
   const month = parts[1];
@@ -292,16 +291,12 @@ function formatDateToBR(dateStr) {
   return `${day}/${month}/${year}`;
 }
 
-// Atualização automática dos filtros
 [filterDate, filterDay, filterSubject].forEach(filter => {
   filter.addEventListener('change', renderTable);
 });
 
-// Torna toggleCompletion acessível globalmente para onchange inline no checkbox
 window.toggleCompletion = toggleCompletion;
-
-// Torna editarTarefa acessível globalmente para onclick inline no botão Alterar
 window.editarTarefa = editarTarefa;
+window.abrirAnotacao = abrirAnotacao;
 
-// Carrega os estudos ao iniciar
 carregarEstudos();
