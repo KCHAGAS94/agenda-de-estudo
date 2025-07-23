@@ -207,3 +207,67 @@ table td input[type="checkbox"] {
   border: none;
   cursor: pointer;
 }
+
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-weight: bold;
+  line-height: 0;
+  font-size: 18px;
+  margin-left: 6px;
+  cursor: pointer;
+  padding: 0;
+  border: none;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+
+#deleteModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.modal-content p {
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.modal-content button {
+  margin: 0 10px;
+}
+
+.delete-icon {
+  background-color: #f7f2f1;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-left: 8px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+
+.delete-icon:hover {
+  background-color: #ff1d04f5;
+}

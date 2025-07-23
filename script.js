@@ -153,7 +153,10 @@ function renderTable() {
     const row = document.createElement('tr');
 
     row.innerHTML = `
-      <td>${entry.date}</td>
+      <td>
+      <button class="delete-icon" onclick="confirmarExclusao('${entry.id}')">🗑️</button>
+        ${entry.date}
+      </td>
       <td>${entry.day}</td>
       <td>${entry.subject}</td>
       <td>${entry.time}</td>
@@ -162,6 +165,7 @@ function renderTable() {
         <button onclick="editarTarefa('${entry.id}')">Alterar</button>
         <button onclick="abrirAnotacao('${entry.id}')">Anotações</button>
       </td>
+
     `;
 
     tableBody.appendChild(row);
@@ -169,6 +173,35 @@ function renderTable() {
 
   updateChart();
 }
+
+function confirmarExclusao(id) {
+  const modal = document.createElement('div');
+  modal.id = 'deleteModal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <p>Tem certeza que deseja excluir esta tarefa?</p>
+      <button onclick="excluirTarefa('${id}')">Sim</button>
+      <button onclick="fecharModal()">Cancelar</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function excluirTarefa(id) {
+  studyCollection.doc(id).delete().then(() => {
+    studyData = studyData.filter(entry => entry.id !== id);
+    fecharModal();
+    renderTable();
+  }).catch(error => {
+    alert("Erro ao excluir: " + error.message);
+  });
+}
+
+function fecharModal() {
+  const modal = document.getElementById('deleteModal');
+  if (modal) modal.remove();
+}
+
 
 function toggleCompletion(id, completed) {
   atualizarConclusaoFirebase(id, completed)
